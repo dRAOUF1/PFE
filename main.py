@@ -4,7 +4,7 @@ from Detector import Detector
 detector = Detector("models\yolov8n-face.pt")
 
 cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture("C:/Users/yas/Downloads/djalilcas.mov")
+#cap = cv2.VideoCapture("C:/Users/yas/Downloads/djalilcas.mov")
 
 while True:
     ret, frame = cap.read()

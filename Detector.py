@@ -19,12 +19,17 @@ class Detector():
 
                     left_eye = result.keypoints.xy[0][0].tolist()
                     right_eye = result.keypoints.xy[0][1].tolist()
+                    nose = result.keypoints.xy[0][2].tolist()
+                    left_mouth = result.keypoints.xy[0][3].tolist()
+                    right_mouth = result.keypoints.xy[0][4].tolist()
                     #convert to tuples of int
                     left_eye = tuple(int(i) for i in left_eye)
                     right_eye = tuple(int(i) for i in right_eye)
-                
+                    nose = tuple(int(i) for i in nose)
+                    left_mouth = tuple(int(i) for i in left_mouth)
+                    right_mouth = tuple(int(i) for i in right_mouth)                
                     
-                    face = Face(x=x1,y=y1,x2=x2,y2=y2,confidence=confidence,left_eye=left_eye,right_eye=right_eye)
+                    face = Face(x=x1,y=y1,x2=x2,y2=y2,confidence=confidence,left_eye=left_eye,right_eye=right_eye,nose=nose,left_mouth=left_mouth,right_mouth=right_mouth)
                     faces.append(face)
 
             return faces
@@ -35,11 +40,17 @@ class Detector():
             x1, y1, x2, y2 = face.x, face.y, face.x2, face.y2
             left_eye = face.left_eye
             right_eye = face.right_eye
+            nose = face.nose
+            left_mouth = face.left_mouth
+            right_mouth = face.right_mouth
             confidence = face.confidence
             frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
             frame = cv2.putText(frame, f"{confidence:.3f}", (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
             frame = cv2.circle(frame, left_eye, 5, (0, 0, 255), 2)
             frame = cv2.circle(frame, right_eye, 5, (0, 0, 255), 2)
+            frame = cv2.circle(frame, nose, 5, (255, 0, 0), 2)
+            frame = cv2.circle(frame, left_mouth, 5, (0, 255, 255), 2)
+            frame = cv2.circle(frame, right_mouth, 5, (0, 255, 255), 2)
         return frame
     def extract(self, frame,faces:Face):
         # test

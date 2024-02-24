@@ -1,0 +1,4 @@
+__pycache__/*
+env/*
+.gitattributes
+face_recogniton.py
