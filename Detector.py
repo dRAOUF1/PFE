@@ -8,23 +8,25 @@ class Detector():
 
     def detect(self, frame):
         faces = []
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = self.model(frame)
         try:
             for result in results:
                 boxes = result.boxes
-                x1, y1, x2, y2= int(boxes.xyxy[0][0]),int(boxes.xyxy[0][1]),int(boxes.xyxy[0][2]),int(boxes.xyxy[0][3])
-
-                left_eye = result.keypoints.xy[0][0].tolist()
-                right_eye = result.keypoints.xy[0][1].tolist()
-
-                #convert to tuples of int
-                left_eye = tuple(int(i) for i in left_eye)
-                right_eye = tuple(int(i) for i in right_eye)
-            
                 confidence = result.boxes.conf.tolist()[0]
+                if confidence > 0.7:
+                    x1, y1, x2, y2= int(boxes.xyxy[0][0]),int(boxes.xyxy[0][1]),int(boxes.xyxy[0][2]),int(boxes.xyxy[0][3])
+
+                    left_eye = result.keypoints.xy[0][0].tolist()
+                    right_eye = result.keypoints.xy[0][1].tolist()
+
+                    #convert to tuples of int
+                    left_eye = tuple(int(i) for i in left_eye)
+                    right_eye = tuple(int(i) for i in right_eye)
                 
-                face = Face(x=x1,y=y1,x2=x2,y2=y2,confidence=confidence,left_eye=left_eye,right_eye=right_eye)
-                faces.append(face)
+                    
+                    face = Face(x=x1,y=y1,x2=x2,y2=y2,confidence=confidence,left_eye=left_eye,right_eye=right_eye)
+                    faces.append(face)
 
             return faces
         except(IndexError):
