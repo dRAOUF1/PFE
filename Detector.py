@@ -9,12 +9,16 @@ class Detector():
     def detect(self, frame):
         faces = []
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = self.model(frame,verbose=False)
+        results = self.model.predict(frame, verbose=False, show=False, conf=0.25)[0]
+
         try:
+            print('longeur de result:',len(results))
             for result in results:
                 boxes = result.boxes
                 confidence = result.boxes.conf.tolist()[0]
-                x1, y1, x2, y2= int(boxes.xyxy[0][0]),int(boxes.xyxy[0][1]),int(boxes.xyxy[0][2]),int(boxes.xyxy[0][3])
+                #x1, y1, x2, y2= int(boxes.xyxy[0][0]),int(boxes.xyxy[0][1]),int(boxes.xyxy[0][2]),int(boxes.xyxy[0][3])
+                x1, y1, x2, y2 = result.boxes.xyxy.tolist()[0]
+                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                 if confidence > 0.7:# and (x2-x1) > 30 and (y2-y1) > 30:
 
                     left_eye = result.keypoints.xy[0][0].tolist()

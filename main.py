@@ -5,7 +5,6 @@ detector = Detector("models\yolov8n-face.pt")
 
 cap = cv2.VideoCapture(0)
 #cap = cv2.VideoCapture("C:/Users/yas/Downloads/djalilcas.mov")
-
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -17,6 +16,7 @@ while True:
     k = cv2.waitKey(10)
     if k == 27:         # wait for ESC key to exit
         break
-
 cap.release()
+
+
 cv2.destroyAllWindows()
