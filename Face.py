@@ -24,8 +24,8 @@ class Face:
         right_mouth: Optional[Tuple[int, int]] = None,
         confidence: Optional[float] = None,
     ):
-        self.x = x
-        self.y = y
+        self.x1 = x
+        self.y1 = y
         self.x2 = x2
         self.y2 = y2
         self.left_eye = left_eye
