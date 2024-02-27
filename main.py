@@ -4,7 +4,7 @@ import cv2 ,time
 
 if __name__ == '__main__':
 
-    app = App("C:/Users/yas/Desktop/tempyolov8")
+    app = App("C:/Users/yas/Desktop/tempsdb")
 
     cap = cv2.VideoCapture("C:/Users/yas/Downloads/djalilcap.mov")
     prev_frame_time = 0

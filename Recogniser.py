@@ -5,7 +5,7 @@
 # Third party copyrights are property of their respective owners.
 
 import numpy as np
-import cv2 as cv
+import cv2
 
 from _testcapi import FLT_MIN
 
@@ -14,7 +14,7 @@ class Recogniser:
         self._modelPath = modelPath
         self._backendId = backendId
         self._targetId = targetId
-        self._model = cv.FaceRecognizerSF.create(
+        self._model = cv2.FaceRecognizerSF.create(
             model=self._modelPath,
             config="",
             backend_id=self._backendId,
@@ -30,21 +30,6 @@ class Recogniser:
     def name(self):
         return self.__class__.__name__
 
-    def setBackend(self, backendId):
-        self._backendId = backendId
-        self._model = cv.FaceRecognizerSF.create(
-            model=self._modelPath,
-            config="",
-            backend_id=self._backendId,
-            target_id=self._targetId)
-
-    def setTarget(self, targetId):
-        self._targetId = targetId
-        self._model = cv.FaceRecognizerSF.create(
-            model=self._modelPath,
-            config="",
-            backend_id=self._backendId,
-            target_id=self._targetId)
 
     def _preprocess(self, image, bbox):
         if bbox is None:
@@ -55,6 +40,8 @@ class Recogniser:
     def infer(self, image, bbox=None):
         # Preprocess
         inputBlob = self._preprocess(image, bbox)
+        cv2.imshow("lol",inputBlob)
+        cv2.waitKey(0)
 
         # Forward
         features = self._model.feature(inputBlob)

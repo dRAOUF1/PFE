@@ -7,7 +7,7 @@ class App:
     def __init__(self,db_path,recognition_model_path="models/face_recognition_sface_2021dec.onnx",detection_model_path='models/face_detection_yunet_2023mar.onnx'):
         self.detector = Detector(modelPath=detection_model_path,
                      inputSize=[320, 320],
-                     confThreshold=0.7,
+                     confThreshold=0.65,
                      nmsThreshold=0.3,
                 )
         self.recognizer = Recogniser(modelPath=recognition_model_path, disType=0)
@@ -20,10 +20,11 @@ class App:
         for image in images:
             img = cv2.imread(image)
             self.detector.setInputSize([img.shape[1], img.shape[0]])
-            face = self.detector.infer(img)
-            if len(face) > 0:
-                embedding = self.recognizer.infer(img,face[0].toArray()[:-1])
-                embeddings[image.split('/')[-1].split('\\')[-1].split('.')[0]] = embedding
+            faces = self.detector.infer(img)
+            if len(faces) > 0:
+                for face in faces:
+                    embedding = self.recognizer.infer(img,face.toArray()[:-1])
+                    embeddings[image.split('/')[-1].split('\\')[-1].split('.')[0]] = embedding
         return embeddings
     
     def find_match(self,image):
