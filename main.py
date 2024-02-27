@@ -6,7 +6,7 @@ if __name__ == '__main__':
 
     app = App("C:/Users/yas/Desktop/tempyolov8")
 
-    cap = cv2.VideoCapture("C:/Users/yas/Downloads/djalil.mov")
+    cap = cv2.VideoCapture("C:/Users/yas/Downloads/djalilcap.mov")
     prev_frame_time = 0
     fp = []
     while True:
