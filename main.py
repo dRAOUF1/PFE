@@ -1,93 +1,45 @@
+from App import App
+import cv2 ,time
 
-import sys
-import argparse
-
-import numpy as np
-import cv2 ,os
-
-from Recogniser import Recogniser
-from Detector import Detector
-
-def dbToEmbeddings(db, recognizer, detector):
-    images = [os.path.join(dossier, fichier) for dossier, sous_dossiers, fichiers in os.walk(db) for fichier in fichiers if fichier.endswith('.jpg') or fichier.endswith('.png') or fichier.endswith('.jpeg')]
-    embeddings = {im.split('/')[-1].split('.')[0]:None for im in images}
-    for image in images:
-        img = cv2.imread(image)
-        detector.setInputSize([img.shape[1], img.shape[0]])
-        face = detector.infer(img)
-        if len(face) > 0:
-            embedding = recognizer.infer(img,face[0].toArray()[:-1])
-            embeddings[image.split('/')[-1].split('.')[0]] = embedding
-    return embeddings
-
-def find_match(image, embeddings, recognizer, detector):
-    minDist = 0
-    minKey = None
-    img = image
-    detector.setInputSize([img.shape[1], img.shape[0]])
-    face = detector.infer(img)
-    if len(face) > 0:
-        embedding = recognizer.infer(img,face[0].toArray()[:-1])
-        for key, value in embeddings.items():
-            if value is not None:
-                result = recognizer.match(embedding, value)
-                if result != 0:
-                    if minDist == 0:
-                        minDist = result
-                        minKey = key
-                    elif result > minDist:
-                        minDist = result
-                        minKey = key
-
-    return minKey,minDist
-    
-def find_match2(img1,db,recognizer,detector):
-    images = [os.path.join(dossier, fichier) for dossier, sous_dossiers, fichiers in os.walk(db) for fichier in fichiers if fichier.endswith('.jpg') or fichier.endswith('.png') or fichier.endswith('.jpeg')]
-
-    detector.setInputSize([img1.shape[1], img1.shape[0]])
-    face1 = detector.infer(img1)
-    if len(face1)>0:
-        face1=face1[0].toArray()
-        for image in images:
-            # try:
-                img = cv2.imread(image)
-                detector.setInputSize([img.shape[1], img.shape[0]])
-                face2 = detector.infer(img)
-                if len(face2)>0:
-                    face2=face2[0].toArray()
-                result = recognizer.match(img1, face1[:-1], img, face2[:-1])
-                if result >= 0.363:
-                    print(image.split('/')[-1], result)
-            # except(IndexError):
-            #     continue
 
 if __name__ == '__main__':
 
-    detector = Detector(modelPath='models/face_detection_yunet_2023mar.onnx',
-                     inputSize=[320, 320],
-                     confThreshold=0.7,
-                     nmsThreshold=0.3,
-                )
-    recognizer = Recogniser(modelPath="models/face_recognition_sface_2021dec.onnx", disType=0)
-    embeddings = dbToEmbeddings("C:/Users/yas/Desktop/tempyolov8/",recognizer, detector)
+    app = App("C:/Users/yas/Desktop/tempyolov8")
 
-    cap = cv2.VideoCapture("C:/Users/yas/Downloads/djalilcap.mov")
+    cap = cv2.VideoCapture("C:/Users/yas/Downloads/djalil.mov")
+    prev_frame_time = 0
+    fp = []
     while True:
         ret, frame = cap.read()
         if not ret:
             break
-        cv2.imshow("lol",frame)
-        pers,dist = find_match(frame,embeddings,recognizer,detector)
-        if pers is not None:
-            print(pers, dist)
-        else:
-            print('unknown')
+        dist,faces = app.find_match(frame)
+
+    
+        if len(faces)>0:
+            for face in faces:
+                frame = app.Draw(frame,face)
+                print(face.name,f"{dist:.3f}")
+        # else:
+        #     print('unknown')
         
+        new_frame_time = time.time() 
+        fps = 1/(new_frame_time-prev_frame_time) 
+        prev_frame_time = new_frame_time 
+        fp.append(fps)
+        fps = str(int(fps))
+        cv2.putText(frame, fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 3, (100, 255, 0), 3, cv2.LINE_AA)  
+        cv2.imshow("lol",frame)
         k = cv2.waitKey(10)
         if k == 27:         # wait for ESC key to exit
             break
         
-        
+
+    #average of fp
+    c = 0
+    for f in fp:
+        c+=f
+    print("average",c/len(fp))
     # Instantiate SFace for face recognition
     # # Instantiate YuNet for face detection
 

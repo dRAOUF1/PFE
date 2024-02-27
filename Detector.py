@@ -46,20 +46,4 @@ class Detector:
         
         return []
 
-    def Draw(self, frame, faces):
-            for face in faces:
-                x1, y1, x2, y2 = int(face.x1), int(face.y1), int(face.x2), int(face.y2)
-                left_eye = int(face.left_eye)
-                right_eye = int(face.right_eye)
-                nose = int(face.nose)
-                left_mouth = int(face.left_mouth)
-                right_mouth = int(face.right_mouth)
-                confidence = face.confidence
-                frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                frame = cv2.putText(frame, f"{confidence:.3f}", (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-                frame = cv2.circle(frame, left_eye, 1, (0, 0, 255), 1)
-                frame = cv2.circle(frame, right_eye, 1, (0, 0, 255), 1)
-                frame = cv2.circle(frame, nose, 1, (255, 0, 0), 1)
-                frame = cv2.circle(frame, left_mouth, 1, (0, 255, 255), 1)
-                frame = cv2.circle(frame, right_mouth, 1, (0, 255, 255), 1)
-            return frame
+    
