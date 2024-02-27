@@ -1,4 +1,5 @@
 from typing import List, Tuple, Optional
+import numpy as np
 class Face:
     x: int
     y: int
@@ -34,3 +35,7 @@ class Face:
         self.left_mouth = left_mouth
         self.right_mouth = right_mouth
         self.confidence = confidence
+
+    def toArray(self):
+        return np.array([self.x1,self.y1,self.x2,self.y2,self.right_eye[0],self.right_eye[1],self.left_eye[0],self.left_eye[1],self.nose[0],self.nose[1],self.right_mouth[0],self.right_mouth[1],self.left_mouth[0],self.left_mouth[1],self.confidence])
+    
