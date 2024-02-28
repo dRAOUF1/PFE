@@ -12,13 +12,13 @@ class Detector():
         results = self.model.predict(frame, verbose=False, show=False, conf=0.25)[0]
 
         try:
-            print('longeur de result:',len(results))
+            #print('longeur de result:',len(results))
             for result in results:
                 boxes = result.boxes
                 confidence = result.boxes.conf.tolist()[0]
                 #x1, y1, x2, y2= int(boxes.xyxy[0][0]),int(boxes.xyxy[0][1]),int(boxes.xyxy[0][2]),int(boxes.xyxy[0][3])
-                x1, y1, x2, y2 = result.boxes.xyxy.tolist()[0]
-                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+                x1, y1, x2, y2 = result.boxes.xyxyn.tolist()[0]
+                x1, y1, x2, y2 = x1*frame.shape[1], y1*frame.shape[0], x2*frame.shape[1], y2*frame.shape[0]
                 if confidence > 0.7:# and (x2-x1) > 30 and (y2-y1) > 30:
 
                     left_eye = result.keypoints.xy[0][0].tolist()
@@ -27,11 +27,11 @@ class Detector():
                     left_mouth = result.keypoints.xy[0][3].tolist()
                     right_mouth = result.keypoints.xy[0][4].tolist()
                     #convert to tuples of int
-                    left_eye = tuple(int(i) for i in left_eye)
-                    right_eye = tuple(int(i) for i in right_eye)
-                    nose = tuple(int(i) for i in nose)
-                    left_mouth = tuple(int(i) for i in left_mouth)
-                    right_mouth = tuple(int(i) for i in right_mouth)                
+                    left_eye = tuple(i for i in left_eye)
+                    right_eye = tuple(i for i in right_eye)
+                    nose = tuple(i for i in nose)
+                    left_mouth = tuple(i for i in left_mouth)
+                    right_mouth = tuple(i for i in right_mouth)                
                     
                     face = Face(x=x1,y=y1,x2=x2,y2=y2,confidence=confidence,left_eye=left_eye,right_eye=right_eye,nose=nose,left_mouth=left_mouth,right_mouth=right_mouth)
                     faces.append(face)
