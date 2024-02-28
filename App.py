@@ -27,6 +27,11 @@ class App:
                     embeddings[image.split('/')[-1].split('\\')[-1].split('.')[0]] = embedding
         return embeddings
     
+    def extractFaces(self,frame):
+        self.detector.setInputSize([frame.shape[1], frame.shape[0]])
+        faces = self.detector.infer(frame)
+        return faces
+    
     def find_match(self,image):
         minDist = 0
         minKey = None
