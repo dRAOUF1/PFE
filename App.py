@@ -58,7 +58,7 @@ class App:
         x1, y1, x2, y2 = int(face.x1), int(face.y1), int(face.x2), int(face.y2)
         confidence = face.confidence
         frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
-        frame = cv2.putText(frame, f"{confidence:.3f}", (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
+        frame = cv2.putText(frame, f"{confidence:.3f}", (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
         frame = cv2.rectangle(frame, (x1,y2), (x2,y2+15), (255, 0, 0) , -1)
         
         cv2.putText(frame, face.name + f"" , (x1,y2+10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA) 
