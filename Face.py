@@ -14,7 +14,6 @@ class Face:
         left_mouth = None,
         right_mouth = None
     ):
-        self.name = ""
         self.x1 = x
         self.y1 = y
         self.x2 = x2

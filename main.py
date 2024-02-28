@@ -6,25 +6,32 @@ if __name__ == '__main__':
 
     app = App("C:/Users/yas/Desktop/tempsdb")
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture("C:/Users/yas/Downloads/ayoub.mov")
     prev_frame_time = 0
     fp = []
+    c = 0
     while True:
         ret, frame = cap.read()
         if not ret:
             break
-        faces = app.extractFaces(frame)
+        c+=1
+        # frame = cv2.rescale(frame,(128,96))
+        if c%2==0:
+            faces = app.extractFaces(frame)
 
-    
-        if len(faces)>0:
-            for face in faces:
-                frame = app.Draw(frame,face)
-                # print(face.name,f"{dist:.3f}")
-        # else:
-        #     print('unknown')
         
-        new_frame_time = time.time() 
-        fps = 1/(new_frame_time-prev_frame_time) 
+            if len(faces)>0:
+                for face in faces:
+                    frame = app.Draw(frame,face)
+                    # print(face.name)
+            # else:
+            #     print('unknown')
+        
+        new_frame_time = time.time()
+        try: 
+            fps = 1/(new_frame_time-prev_frame_time) 
+        except (ZeroDivisionError):
+            pass
         prev_frame_time = new_frame_time 
         fp.append(fps)
         fps = str(int(fps))
