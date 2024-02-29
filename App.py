@@ -35,13 +35,13 @@ class App:
         return faces
     
     def find_match(self,image):
-        minDist = 0
-        minKey = None
         recognizedFaces = []
         self.detector.setInputSize([image.shape[1], image.shape[0]])
         faces = self.detector.infer(image)
         if len(faces) > 0:
             for face in faces:
+                minDist = 0
+                minKey = None
                 embedding = self.recognizer.infer(image,face.toArray()[:-1])
                 for key, value in self.embeddings.items():
                     if value is not None:

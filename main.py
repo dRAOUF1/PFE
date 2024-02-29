@@ -6,7 +6,7 @@ if __name__ == '__main__':
 
     app = App("C:/Users/yas/Desktop/tempsdb")
 
-    cap = cv2.VideoCapture("C:/Users/yas/Downloads/ayoub.mov")
+    cap = cv2.VideoCapture(0)
     prev_frame_time = 0
     fp = []
     c = 0
@@ -16,8 +16,8 @@ if __name__ == '__main__':
             break
         c+=1
         # frame = cv2.rescale(frame,(128,96))
-        if c%2==0:
-            faces = app.extractFaces(frame)
+        if c%1==0:
+            faces = app.find_match(frame)
 
         
             if len(faces)>0:
