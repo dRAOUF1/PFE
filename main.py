@@ -1,10 +1,10 @@
 from App import App
 import cv2 ,time
-
+import requests 
 
 if __name__ == '__main__':
-
-    app = App("C:/Users/yas/Desktop/tempsdb")
+    displayed_ids=[]
+    app = App("C:/Users/TRETEC/Desktop/PFE/archive")
 
     cap = cv2.VideoCapture(0)
     prev_frame_time = 0
@@ -24,6 +24,9 @@ if __name__ == '__main__':
                 for face in faces:
                     frame = app.Draw(frame,face)
                     # print(face.name)
+                    if face.name not in displayed_ids:
+                        displayed_ids.append(face.name)
+                        r = requests.post('http://localhost:3001/postEtds',json={'matricule':face.name})
             # else:
             #     print('unknown')
         
