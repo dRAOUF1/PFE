@@ -1,50 +1,31 @@
 from App import App
 import cv2 ,time
 
+from facenet_pytorch import MTCNN, InceptionResnetV1
+import torch
+from PIL import Image
 
-if __name__ == '__main__':
+# Initialize MTCNN for face detection
+mtcnn = MTCNN(keep_all=True)
 
-    app = App("C:/Users/yas/Desktop/tempsdb")
+# Load pre-trained FaceNet model
+resnet = InceptionResnetV1(pretrained='casia-webface').eval()
+cap = cv2.VideoCapture(0)
+while True:
+    # Load an image containing faces
+    ret,img = cap.read()
+    # Detect faces in the image
+    boxes, _ = mtcnn.detect(img)
 
-    cap = cv2.VideoCapture(0)
-    prev_frame_time = 0
-    fp = []
-    c = 0
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-        c+=1
-        # frame = cv2.rescale(frame,(128,96))
-        if c%1==0:
-            faces = app.find_match(frame)
-
-        
-            if len(faces)>0:
-                for face in faces:
-                    frame = app.Draw(frame,face)
-                    # print(face.name)
-            # else:
-            #     print('unknown')
-        
-        new_frame_time = time.time()
-        try: 
-            fps = 1/(new_frame_time-prev_frame_time) 
-        except (ZeroDivisionError):
-            pass
-        prev_frame_time = new_frame_time 
-        fp.append(fps)
-        fps = str(int(fps))
-        cv2.putText(frame, fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 3, (100, 255, 0), 3, cv2.LINE_AA)  
-        cv2.imshow("lol",frame)
-        k = cv2.waitKey(10)
-        if k == 27:         # wait for ESC key to exit
-            break
-        
-
-    #average of fp
-    c = 0
-    for f in fp:
-        c+=f
-    print("average",c/len(fp))
-    cap.release()
+    # If faces are detected, extract embeddings
+    if boxes is not None:
+        aligned = mtcnn(img)
+        embeddings = resnet(aligned).detach()
+    #draw boxes
+    for box in boxes:
+        cv2.rectangle(img, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
+    cv2.imshow('img', img)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+    #make a request with face name
+    
