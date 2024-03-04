@@ -2,6 +2,7 @@ from Detector import Detector
 from Recogniser import Recogniser
 from RecognizedFace import RecognizedFace
 from Face import Face
+import random
 import os,cv2
 
 
@@ -59,6 +60,19 @@ class App:
                     recognizedFaces.append(RecognizedFace(minKey,minDist,face))
         return recognizedFaces
     
+    def facesFromVideo(self,video_path,output_path):
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        cap = cv2.VideoCapture(video_path)
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            faces = self.find_match(frame)
+            for face in faces:
+                cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
+                cv2.imwrite(f"{output_path}/{face.name}-{random.randint(0,10000)}.jpg",cropped)
+        cap.release()
     def Draw(self, frame, obj, keypoints=False):
         if isinstance(obj, RecognizedFace):
             return self._draw_recognized_face(frame, obj, keypoints)
