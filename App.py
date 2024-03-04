@@ -71,6 +71,7 @@ class App:
             faces = self.find_match(frame)
             for face in faces:
                 cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
+                cropped = cv2.resize(cropped,(128,128))
                 cv2.imwrite(f"{output_path}/{face.name}-{random.randint(0,10000)}.jpg",cropped)
         cap.release()
     def Draw(self, frame, obj, keypoints=False):
