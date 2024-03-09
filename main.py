@@ -99,7 +99,7 @@ if __name__ == '__main__':
                     print("\n",face.name,matricule[face.name] )
                     if matricule[face.name] not in presents:
                         presents.append(matricule[face.name])
-                        #r = requests.post(f"{adresse_ip}:{port}/postEtds",json={"matricule":matricule[face.name]})
+                        r = requests.post(f"http://{adresse_ip}:{port}/postEtds",json={"matricule":matricule[face.name]})
                         #print(r)
                         #exit(0)
                     
