@@ -1,11 +1,11 @@
 import os,cv2
-from pymongo import MongoClient
-        
+import pymongo
+import sys,getopt
 
 
 if __name__ == "__main__":
     DB = "C:/Users/yas/Desktop/tempsdb"
-    client = MongoClient("mongodb://localhost:27017/")
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client["mydb"]
     # print(client.list_database_names())
     # exit(0)
@@ -35,5 +35,9 @@ if __name__ == "__main__":
             inputBlob = recognizer.alignCrop(img,faces[1][:-1])
             embedding = recognizer.feature(inputBlob)
             etudiant = {"MatriculeEtd":image.split('/')[-1].split('\\')[-1].split('.')[0], "embedding":embedding.tolist()}
-            result=db.embeddings.insert_one(etudiant)
-            # print(image.split('/')[-1].split('\\')[-1].split('.')[0], embedding)
+            try:
+                result=db.embeddings.insert_one(etudiant)
+                # print(image.split('/')[-1].split('\\')[-1].split('.')[0], embedding)
+            except pymongo.errors.DuplicateKeyError:
+                print("Erreur: clé dupliqué")
+                continue
