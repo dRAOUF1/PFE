@@ -10,6 +10,7 @@ def usage():
   print("  -i <adresse_ip>  : Adresse IP du back")
   print("  -p <port>  : port")
   print("  -r <degre_rotation> : DegrÃ© de rotation de l'image (0, 90, 180 ou 270)")
+  print("  -s <save faces> : Enregistrer de nouvelles images des visage (0 ou 1)")
 
 
 
@@ -33,6 +34,7 @@ if __name__ == '__main__':
     adresse_ip = None
     port = None
     degre_rotation = 0
+    save_faces = False
 
     # Analyser les arguments de la ligne de commande
     try:
@@ -50,6 +52,10 @@ if __name__ == '__main__':
           degre_rotation = int(arg)
         elif opt in ("-p", "--port"):
             port = arg
+        elif opt in ("-s"):
+            if opt == 1:
+                save_faces = True
+        
         else:
           print("Option inconnue : {}".format(opt))
           usage()
@@ -57,7 +63,7 @@ if __name__ == '__main__':
 
     # VÃ©rifier le degrÃ© de rotation
     if degre_rotation not in (0, 90, 180, 270):
-        print("DegrÃ© de rotation invalide : {}".format(degre_rotation))
+        print("Degré de rotation invalide : {}".format(degre_rotation))
         usage()
         sys.exit(1)
     else:
@@ -95,6 +101,10 @@ if __name__ == '__main__':
             #print(len(faces),"hadi len of faces")
             if len(faces)>0:
                 for face in faces:
+                    if save_faces:
+                        cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
+                        cropped = cv2.resize(cropped,(128,128))
+                        cv2.imwrite(f"faces/{face.name}-{time.time()}.jpg",cropped)
                     #frame = app.Draw(frame,face)
                     print("\n",face.name,matricule[face.name] )
                     if matricule[face.name] not in presents:
