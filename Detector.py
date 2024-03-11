@@ -3,14 +3,39 @@ import cv2
 from Face import Face
 
 class Detector:
+    """
+    A class that represents a face detector.
+
+    Attributes:
+        _modelPath (str): The path to the face detection model.
+        _inputSize (tuple): The input size of the model in the format (width, height).
+        _confThreshold (float): The confidence threshold for face detection.
+        _nmsThreshold (float): The non-maximum suppression threshold for face detection.
+        _model (cv2.FaceDetectorYN): The face detection model.
+
+    Methods:
+        __init__(self, modelPath, inputSize=[320, 320], confThreshold=0.6, nmsThreshold=0.3):
+            Initializes the Detector object with the specified parameters.
+        setInputSize(self, input_size):
+            Sets the input size of the model.
+        infer(self, image):
+            Performs face detection on the given image and returns a list of detected faces.
+    """
+
     def __init__(self, modelPath, inputSize=[320, 320], confThreshold=0.6, nmsThreshold=0.3):
+        """
+        Initializes the Detector object with the specified parameters.
+
+        Args:
+            modelPath (str): The path to the face detection model.
+            inputSize (list, optional): The input size of the model in the format [width, height]. Defaults to [320, 320].
+            confThreshold (float, optional): The confidence threshold for face detection. Defaults to 0.6.
+            nmsThreshold (float, optional): The non-maximum suppression threshold for face detection. Defaults to 0.3.
+        """
         self._modelPath = modelPath
         self._inputSize = tuple(inputSize) # [w, h]
         self._confThreshold = confThreshold
         self._nmsThreshold = nmsThreshold
-        # self._topK = topK
-        # self._backendId = backendId
-        # self._targetId = targetId
 
         self._model = cv2.FaceDetectorYN.create(
             model=self._modelPath,
@@ -24,9 +49,24 @@ class Detector:
 
 
     def setInputSize(self, input_size):
+        """
+        Sets the input size of the model.
+
+        Args:
+            input_size (list): The input size of the model in the format [width, height].
+        """
         self._model.setInputSize(tuple(input_size))
 
     def infer(self, image):
+        """
+        Performs face detection on the given image and returns a list of detected faces.
+
+        Args:
+            image: The image on which to perform face detection.
+
+        Returns:
+            list: A list of detected faces, where each face is represented as a Face object.
+        """
         # Forward
         results = self._model.detect(image)
         if results[1] is not None:
