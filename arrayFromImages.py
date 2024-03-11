@@ -15,6 +15,8 @@ if __name__ == "__main__":
     try:
         IMAGES_PATH = sys.argv[1]
         MONGO_URL = sys.argv[2]
+        FACE_DETECTOR = sys.argv[3]
+        FACE_RECOGNIZER = sys.argv[4]
     except IndexError:
         print("Error: Please provide the path to the images directory and the MongoDB URL as command-line arguments.")
         sys.exit(1)
@@ -30,7 +32,7 @@ if __name__ == "__main__":
     # Create a face detector and a face recognizer
     try:
         detector = cv2.FaceDetectorYN.create(
-            model="models/face_detection_yunet_2023mar.onnx",
+            model=FACE_DETECTOR,
             config="",
             input_size=[320, 320],
             score_threshold=0.65,
@@ -39,7 +41,7 @@ if __name__ == "__main__":
             backend_id=0,
             target_id=0)
         recognizer = cv2.FaceRecognizerSF.create(
-            model="models/face_recognition_sface_2021dec.onnx",
+            model=FACE_RECOGNIZER,
             config="",
             backend_id=0,
             target_id=0)
@@ -52,19 +54,19 @@ if __name__ == "__main__":
 
     # Process each image
     for image in images:
-        try:
-            img = cv2.imread(image)
-            detector.setInputSize([img.shape[1], img.shape[0]])
-            faces = detector.detect(img)
-            if len(faces) > 0:
-                inputBlob = recognizer.alignCrop(img, faces[1][:-1])
-                embedding = recognizer.feature(inputBlob)
-                etudiant = {"MatriculeEtd": image.split('/')[-1].split('\\')[-1].split('.')[0], "embedding": embedding.tolist()}
-                try:
-                    # Insert the student's embedding into the MongoDB database
-                    result = db.embeddings.insert_one(etudiant)
-                except pymongo.errors.DuplicateKeyError:
-                    print("Error: Duplicate key.")
-                    continue
-        except cv2.error as e:
-            print(f"Error: Failed to process image {image}. {e}")
+        # try:
+        img = cv2.imread(image)
+        detector.setInputSize([img.shape[1], img.shape[0]])
+        faces = detector.detect(img)
+        if len(faces) > 0:
+            inputBlob = recognizer.alignCrop(img, faces[1][:-1])
+            embedding = recognizer.feature(inputBlob)
+            etudiant = {"MatriculeEtd": image.split('/')[-1].split('\\')[-1].split('.')[0], "embedding": embedding.tolist()}
+            try:
+                # Insert the student's embedding into the MongoDB database
+                result = db.embeddings.insert_one(etudiant)
+            except pymongo.errors.DuplicateKeyError:
+                print("Error: Duplicate key.")
+                continue
+        # except cv2.error as e:
+            # print(f"Error: Failed to process image {image}. {e}")
