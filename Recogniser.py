@@ -3,6 +3,7 @@ import cv2
 
 
 class Recogniser:
+
     """
     Class for face recognition using a pre-trained model.
 
@@ -122,3 +123,4 @@ class Recogniser:
         except Exception as e:
             print(f"Error occurred during matching: {str(e)}")
             return 0
+

@@ -40,6 +40,7 @@ class Face:
         self.right_mouth = right_mouth
         self.confidence = confidence
 
+
     def toArray(self) -> np.ndarray:
         """
         Converts the Face object to a numpy array.

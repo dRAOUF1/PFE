@@ -13,6 +13,7 @@ class Detector:
         _nmsThreshold (float): The non-maximum suppression threshold for face detection.
         _model (cv2.FaceDetectorYN): The face detection model.
 
+
     Methods:
         __init__(self, modelPath, inputSize=[320, 320], confThreshold=0.6, nmsThreshold=0.3):
             Initializes the Detector object with the specified parameters.
