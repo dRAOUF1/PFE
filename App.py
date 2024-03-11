@@ -12,8 +12,8 @@ class App:
 
     Args:
         db_path (str): The path to the directory containing the face images for building the embeddings.
-        recognition_model_path (str, optional): The path to the face recognition model file.
-        detection_model_path (str, optional): The path to the face detection model file.
+        recognition_model_path (str): The path to the face recognition model file.
+        detection_model_path (str): The path to the face detection model file.
     """
     def __init__(self, db_path, recognition_model_path="models/face_recognition_sface_2021dec.onnx", detection_model_path='models/face_detection_yunet_2023mar.onnx'):
         """
@@ -21,8 +21,8 @@ class App:
 
         Args:
             db_path (str): The path to the directory containing the face images for building the embeddings.
-            recognition_model_path (str, optional): The path to the face recognition model file.
-            detection_model_path (str, optional): The path to the face detection model file.
+            recognition_model_path (str): The path to the face recognition model file.
+            detection_model_path (str): The path to the face detection model file.
         """
         try:
             self.detector = Detector(modelPath=detection_model_path,
