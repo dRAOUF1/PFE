@@ -21,7 +21,8 @@ matricule = {"raouf":"212131075659",
              "mokrane":"212131075661",
              "amina":"212131075664",
              "boudia":"212131075665",
-             "lina":"212131075666",       
+             "lina":"212131075666",   
+             "sofiane":"212131075662"    
              }
 rotations = {0:(None,(640,360 )),
              90:(cv2.ROTATE_90_CLOCKWISE,(360,640 )),
@@ -110,7 +111,7 @@ if __name__ == '__main__':
                     if matricule[face.name] not in presents:
                         presents.append(matricule[face.name])
                         r = requests.post(f"http://{adresse_ip}:{port}/postEtds",json={"matricule":matricule[face.name]})
-                        #print(r)
+                        print(r)
                         #exit(0)
                     
                     
@@ -129,10 +130,10 @@ if __name__ == '__main__':
         fp.append(fps)
         fps = str(int(fps))
         #cv2.putText(frame, fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 3, (100, 255, 0), 3, cv2.LINE_AA)  
-#         cv2.imshow("lol",frame)
-#         k = cv2.waitKey(10)
-#         if k == 27:         # wait for ESC key to exit
-#             break
+        cv2.imshow("lol",frame)
+        k = cv2.waitKey(10)
+        if k == 27:         # wait for ESC key to exit
+            break
         
 
     #average of fp
