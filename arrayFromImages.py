@@ -51,7 +51,8 @@ if __name__ == "__main__":
 
     # Get the paths of all image files in the specified directory
     images = [os.path.join(dossier, fichier) for dossier, sous_dossiers, fichiers in os.walk(IMAGES_PATH) for fichier in fichiers if fichier.endswith('.jpg') or fichier.endswith('.png') or fichier.endswith('.jpeg')]
-
+    etudiants_collection = db['etudiants']
+    matricules_etudiants = etudiants_collection.distinct('MatriculeEtd')
     # Process each image
     for image in images:
         # try:
@@ -61,8 +62,12 @@ if __name__ == "__main__":
         if len(faces) > 0:
             inputBlob = recognizer.alignCrop(img, faces[1][:-1])
             embedding = recognizer.feature(inputBlob)
-            etudiant = {"MatriculeEtd": image.split('/')[-1].split('\\')[-1].split('.')[0], "embedding": embedding.tolist()}
+            matricule = image.split('/')[-1].split('\\')[-1].split('.')[0]
+            etudiant = {"MatriculeEtd": matricule, "embedding": embedding.tolist()}
             try:
+                if (matricule not in matricules_etudiants):
+                    print(f"Error: Matricule {matricule} not found in the etudiants collection.")
+                    continue
                 # Insert the student's embedding into the MongoDB database
                 result = db.embeddings.insert_one(etudiant)
             except pymongo.errors.DuplicateKeyError:
