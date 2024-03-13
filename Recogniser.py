@@ -114,6 +114,10 @@ class Recogniser:
             float: Similarity score between the two faces. Returns 0 if the score is below the threshold.
         """
         try:
+            #verify type of feature1 and feature2
+            assert type(feature1) == np.ndarray, "Invalid type for feature1"
+            assert type(feature2) == np.ndarray, "Invalid type for feature2"
+            
             if self._disType == 0: # COSINE
                 cosine_score = self._model.match(feature1, feature2, self._disType)
                 return cosine_score if cosine_score >= self._threshold_cosine else 0

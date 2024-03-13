@@ -5,6 +5,8 @@ from Face import Face
 import random
 import os
 import cv2
+import requests
+import numpy as np
 
 class App:
     """
@@ -31,11 +33,25 @@ class App:
                                      nmsThreshold=0.3,
                                     )
             self.recognizer = Recogniser(modelPath=recognition_model_path, disType=0)
-            self.embeddings = self._dbToEmbeddings(db_path)
+            self.embeddings = self._getEmbeddingsFromBackend(db_path)
         except Exception as e:
             print(f"Error occurred during initialization: {str(e)}")
 
-    def _dbToEmbeddings(self, db):
+    
+    def _getEmbeddingsFromBackend(self, db_Url):
+        try:
+            r = requests.get(db_Url)
+        except Exception as e:
+            print(f"Error occurred during getting embeddings from backend: {str(e)}")
+            return {}
+        # cast the embeddings to an array
+        res = r.json()
+        for key in res.keys():
+            res[key] = np.array(res[key]).astype(np.float32)
+        return res
+
+
+    def localDbToEmbeddings(self, db):
         """
         Builds the embeddings dictionary from the face images in the specified directory.
 
@@ -179,7 +195,7 @@ class App:
             frame = self._draw_face(frame, recoFace.face, keypoints)
             x1, y1, x2, y2 = int(recoFace.face.x1), int(recoFace.face.y1), int(recoFace.face.x2), int(recoFace.face.y2)
             frame = cv2.rectangle(frame, (x1, y2), (x2, y2 + 15), (255, 0, 0), -1)
-            cv2.putText(frame, recoFace.name + f"{recoFace.distance:.2f}", (x1, y2 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+            cv2.putText(frame, recoFace.name + f"///{recoFace.distance:.2f}", (x1-15, y2 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1, cv2.LINE_AA)
             return frame
         except Exception as e:
             print(f"Error occurred during drawing recognized face: {str(e)}")
