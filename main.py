@@ -1,3 +1,4 @@
+import numpy as np
 from App import App
 import cv2 ,time
 import requests
@@ -68,67 +69,73 @@ if __name__ == '__main__':
         print("port invalide")
         sys.exit(1)
     
-    app = App("http://localhost:3001/getEmbeddings/34/1")
+    app = App("http://localhost:3001/getEmbeddings/all/all")
+    print(app.embeddings)
     print("fin app build")
     presents = []
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture("test.avi")
+    out = cv2.VideoWriter('output.avi',cv2.VideoWriter_fourcc(*'DIVX'), 10, (640,360))
     prev_frame_time = 0
     fp = []
     c = 0
     print("debut boucle")
-    # while True:
-        # ret,frame=cap.read()
-        # if not ret:
-        #     break
+    while True:
+        ret,frame=cap.read()
+        if not ret:
+            break
         #print("capture")
-    frame = cv2.imread("C:/Users/yas/Desktop/abadlijpg.jpg")
     #resize frame to 0.5
-    frame = cv2.resize(frame, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_AREA)
-    if not degre_rotation[0] == None:
-        frame = cv2.rotate(frame, degre_rotation[0])
-    
-    c+=1
-    # frame = cv2.resize(frame,(128,96))
-    if c%1==0:
-        faces = app.find_match(frame)
+        # frame = cv2.resize(frame, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_AREA)
+        if not degre_rotation[0] == None:
+            frame = cv2.rotate(frame, degre_rotation[0])
+        
+        c+=1
+        #incresea brigtness of a frame 140
+        # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # frame = cv2.add(frame, np.array([40.0]))
+        # frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
+        # frame = cv2.resize(frame,(128,96))
+        if c%1==0:
+            faces = app.find_match(frame)
 
-        #print(len(faces),"hadi len of faces")
-        if len(faces)>0:
-            for face in faces:
-                if save_faces:
-                    cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
-                    cropped = cv2.resize(cropped,(128,128))
-                    cv2.imwrite(f"faces/{face.name}-{time.time()}.jpg",cropped)
-                frame = app.Draw(frame,face)
-                # print("\n",face.name,matricule[face.name] )
-                print(face.name)    
-                if face.name not in presents:
-                    presents.append(face.name)
-                    r = requests.post(f"http://{adresse_ip}:{port}/postEtdsPresent",json={"matricule":face.name})
-                    print(r)
-                    #exit(0)
-                
-                
-        #else:
-            #   print("walo")
-                
-        # else:
-        #     print('unknown')
-    
-    new_frame_time = time.time()
-    try: 
-        fps = 1/(new_frame_time-prev_frame_time) 
-    except (ZeroDivisionError):
-        pass
-    prev_frame_time = new_frame_time 
-    fp.append(fps)
-    fps = str(int(fps))
-    #cv2.putText(frame, fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 3, (100, 255, 0), 3, cv2.LINE_AA)  
-    cv2.imshow("lol",frame)
-    k = cv2.waitKey(0)
-        # if k == 27:         # wait for ESC key to exit
-        #     break
+            #print(len(faces),"hadi len of faces")
+            if len(faces)>0:
+                for face in faces:
+                    if save_faces:
+                        cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
+                        cropped = cv2.resize(cropped,(128,128))
+                        cv2.imwrite(f"faces/{face.name}-{time.time()}.jpg",cropped)
+                    frame = app.Draw(frame,face)
+                    # print("\n",face.name,matricule[face.name] )
+                    # print(face.name)    
+                    if face.name not in presents:
+                        # presents.append(face.name)
+                        # r = requests.post(f"http://{adresse_ip}:{port}/postEtdsPresent",json={"matricule":face.name})
+                        print(face.name,'\t',face.distance)
+                        #exit(0)
+                    
+                    
+            #else:
+                #   print("walo")
+                    
+            # else:
+            #     print('unknown')
+        
+        new_frame_time = time.time()
+        try: 
+            fps = 1/(new_frame_time-prev_frame_time) 
+        except (ZeroDivisionError):
+            pass
+        prev_frame_time = new_frame_time 
+        fp.append(fps)
+        fps = str(int(fps))
+        #cv2.putText(frame, fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 3, (100, 255, 0), 3, cv2.LINE_AA)  
+        cv2.imshow("lol",frame)
+        out.write(frame)
+        k = cv2.waitKey(10)
+        if k == 27:         # wait for ESC key to exit
+            break
         
 
     #average of fp

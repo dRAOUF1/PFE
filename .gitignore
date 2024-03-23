@@ -3,3 +3,7 @@ env/*
 .gitattributes
 face_recogniton.py
 output_test/*
+/djalil
+/miv-test
+/miv
+*.avi

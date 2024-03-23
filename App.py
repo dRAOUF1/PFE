@@ -17,7 +17,7 @@ class App:
         recognition_model_path (str): The path to the face recognition model file.
         detection_model_path (str): The path to the face detection model file.
     """
-    def __init__(self, db_path, recognition_model_path="models/face_recognition_sface_2021dec.onnx", detection_model_path='models/face_detection_yunet_2023mar.onnx'):
+    def __init__(self, db_path=None, recognition_model_path="models/face_recognition_sface_2021dec.onnx", detection_model_path='models/face_detection_yunet_2023mar.onnx', predictor_path="./models/shape_predictor_5_face_landmarks.dat"):
         """
         Initializes an instance of the App class.
 
@@ -28,12 +28,14 @@ class App:
         """
         try:
             self.detector = Detector(modelPath=detection_model_path,
+                                     predictor_path=predictor_path,
                                      inputSize=[320, 320],
                                      confThreshold=0.65,
                                      nmsThreshold=0.3,
                                     )
             self.recognizer = Recogniser(modelPath=recognition_model_path, disType=0)
-            self.embeddings = self._getEmbeddingsFromBackend(db_path)
+            if db_path:
+                self.embeddings = self._getEmbeddingsFromBackend(db_path)
         except Exception as e:
             print(f"Error occurred during initialization: {str(e)}")
 
@@ -87,13 +89,13 @@ class App:
         Returns:
             list: A list of detected faces.
         """
-        try:
-            self.detector.setInputSize([frame.shape[1], frame.shape[0]])
-            faces = self.detector.infer(frame)
-            return faces
-        except Exception as e:
-            print(f"Error occurred during face extraction: {str(e)}")
-            return []
+        # try:
+        self.detector.setInputSize([frame.shape[1], frame.shape[0]])
+        faces = self.detector.infer(frame)
+        return faces
+        # except Exception as e:
+        #     print(f"Error occurred during face extraction: {str(e)}")
+        #     return []
 
     def find_match(self, image):
         """
@@ -140,18 +142,23 @@ class App:
             output_path (str): The path to the output directory.
         """
         try:
+            c =0
             if not os.path.exists(output_path):
                 os.makedirs(output_path)
             cap = cv2.VideoCapture(video_path)
             while True:
                 ret, frame = cap.read()
+                frame = cv2.rotate(frame, cv2.ROTATE_180)
                 if not ret:
                     break
-                faces = self.find_match(frame)
+                faces = self.extractFaces(frame)
                 for face in faces:
-                    cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
+                    cropped = frame[abs(int(face.y1)):int(face.y2), int(face.x1):int(face.x2)]
                     cropped = cv2.resize(cropped, (128, 128))
-                    cv2.imwrite(f"{output_path}/{face.name}-{random.randint(0, 10000)}.jpg", cropped)
+                    # print(face.name)
+                    # if "212131075658" not in face.name:
+                    cv2.imwrite(f"{output_path}/{c}.jpg", cropped)
+                    c+=1
             cap.release()
         except Exception as e:
             print(f"Error occurred during face extraction from video: {str(e)}")
