@@ -100,6 +100,7 @@ if __name__ == '__main__':
                     cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
                     cropped = cv2.resize(cropped,(128,128))
                     cv2.imwrite(f"faces/{face.name}-{time.time()}.jpg",cropped)
+                    
                 frame = app.Draw(frame,face)
                 # print("\n",face.name,matricule[face.name] )
                 print(face.name)    

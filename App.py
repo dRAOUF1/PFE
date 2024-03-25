@@ -29,7 +29,7 @@ class App:
         try:
             self.detector = Detector(modelPath=detection_model_path,
                                      inputSize=[320, 320],
-                                     confThreshold=0.65,
+                                     confThreshold=0.9,
                                      nmsThreshold=0.3,
                                     )
             self.recognizer = Recogniser(modelPath=recognition_model_path, disType=0)
