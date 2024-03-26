@@ -26,7 +26,7 @@ class CentroidTracker:
 	def register(self, centroid):
 		# when registering an object we use the next available object
 		# ID to store the centroid
-		self.objects[self.nextObjectID] = centroid
+		self.objects[self.nextObjectID] = {"centroid":centroid,"etudiants":{centroid[2]:1}}
 		self.disappeared[self.nextObjectID] = 0
 		if self.nextObjectID == 100:
 			self.nextObjectID = 0
@@ -36,6 +36,11 @@ class CentroidTracker:
 	def deregister(self, objectID):
 		# to deregister an object ID we delete the object ID from
 		# both of our respective dictionaries
+		#get the max matricule from etudiants
+		etudiants = self.objects[objectID]["etudiants"]
+		max_matricule = max(etudiants,key=etudiants.get)
+		if etudiants[max_matricule] > 1:
+			print("hada max",max_matricule, "hada id",objectID, "count",etudiants[max_matricule])
 		del self.objects[objectID]
 		del self.disappeared[objectID]
 
@@ -86,7 +91,7 @@ class CentroidTracker:
 		else:
 			# grab the set of object IDs and corresponding centroids
 			objectIDs = list(self.objects.keys())
-			objectCentroids = list(self.objects.values())
+			objectCentroids = [obj["centroid"] for obj in self.objects.values()]
 			objectCentroids=np.array(objectCentroids)
 			#print(objectCentroids)
 			# compute the distance between each pair of object
@@ -131,7 +136,8 @@ class CentroidTracker:
 				# set its new centroid, and reset the disappeared
 				# counter
 				objectID = objectIDs[row]
-				self.objects[objectID] = inputCentroids1[col]
+				self.objects[objectID]["centroid"] = inputCentroids1[col]
+				self.objects[objectID]["etudiants"][inputCentroids1[col][2]] = self.objects[objectID]["etudiants"].get(inputCentroids1[col][2],0)+1
 				self.disappeared[objectID] = 0
 
 				# indicate that we have examined each of the row and

@@ -52,3 +52,12 @@ class Face:
             return np.array([self.x1, self.y1, self.x2, self.y2, self.right_eye[0], self.right_eye[1], self.left_eye[0], self.left_eye[1], self.nose[0], self.nose[1], self.right_mouth[0], self.right_mouth[1], self.left_mouth[0], self.left_mouth[1], self.confidence])
         except (TypeError, IndexError):
             raise ValueError("Invalid face object. Some attributes are missing or have incorrect format.")
+
+    def setId(self, id: int):
+        """
+        Sets the ID of the face.
+
+        Args:
+            id (int): The ID to set.
+        """
+        self.id = id
