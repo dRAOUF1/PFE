@@ -24,7 +24,7 @@ class Recogniser:
             self._disType = disType # 0: cosine similarity, 1: Norm-L2 distance
             assert self._disType in [0, 1], "0: Cosine similarity, 1: norm-L2 distance, others: invalid"
 
-            self._threshold_cosine = 0.39
+            self._threshold_cosine = 0.41
             self._threshold_norml2 = 1.128
         except Exception as e:
             print(f"Error occurred during initialization: {str(e)}")
