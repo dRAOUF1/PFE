@@ -29,7 +29,7 @@ class App:
         try:
             self.detector = Detector(modelPath=detection_model_path,
                                      inputSize=[320, 320],
-                                     confThreshold=0.9,
+                                     confThreshold=0.65,
                                      nmsThreshold=0.3,
                                     )
             self.recognizer = Recogniser(modelPath=recognition_model_path, disType=0)
@@ -233,3 +233,24 @@ class App:
         except Exception as e:
             print(f"Error occurred during drawing face: {str(e)}")
             return frame
+
+    def get_embedding(self,frame):
+        """
+        Extracts the embeddings from the given frame.
+
+        Args:
+            frame (numpy.ndarray): The input frame.
+
+        Returns:
+            numpy.ndarray: The embeddings extracted from the frame.
+        """
+        try:
+            faces = self.extractFaces(frame)
+            if len(faces) > 0:
+                for face in faces:
+                    embedding = self.recognizer.infer(frame, face.toArray()[:-1])
+                    return embedding
+            return None
+        except Exception as e:
+            print(f"Error occurred during getting embeddings: {str(e)}")
+            return None

@@ -99,6 +99,8 @@ class CentroidTracker:
 			# goal will be to match an input centroid to an existing
 			# object centroid
 			D = dist.cdist(np.array(objectCentroids[:,:2].astype('int32')), inputCentroids1[:,:2].astype('int32'))
+			if D.size>1:
+				print("lol")
 			#D = dist.cdist(np.array(objectCentroids[:1]), inputCentroids)
 			# in order to perform this matching we must (1) find the
 			# smallest value in each row and then (2) sort the row

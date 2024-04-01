@@ -1,4 +1,5 @@
 from centroidtracker2 import CentroidTracker
+from VideoStream import VideoStream
 from App import App
 import cv2
 
@@ -10,15 +11,14 @@ print("[INFO] loading model...")
 app = App("http://localhost:3001/getEmbeddings/34/1")
 # initialize the video stream and allow the camera sensor to warmup
 print("[INFO] starting video stream...")
-cap = cv2.VideoCapture("C:/Users/yas/Desktop/test.avi")
+cap = VideoStream("C:/Users/yas/Desktop/test.avi")
 while True:
     rects = []
-    ret, frame = cap.read()
-    if not ret:
+    frame = cap.read()
+    if frame is None:
         break
     frame = cv2.rotate(frame, cv2.ROTATE_180)
-    if W is None or H is None:
-        (H, W) = frame.shape[:2]
+    
     faces = app.extractFaces(frame)
 
     for face in faces:
