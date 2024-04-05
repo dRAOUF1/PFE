@@ -118,7 +118,7 @@ if __name__ == '__main__':
                             cropped = cv2.resize(cropped,(128,128))
                             cv2.imwrite(f"faces/{face.name}-{time.time()}.jpg",cropped)
                         spoofed = spoof.is_spoof(cropped)
-                        if spoofed[0][1] > 0.8:
+                        if spoofed[0][1] > 0.6:
                             print("Spoof detected",spoofed[0][1])
                         else:
                             rects.append((int(face.face.x1), int(face.face.y1), int(face.face.x2), int(face.face.y2), face.name))
