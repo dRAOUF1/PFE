@@ -120,7 +120,8 @@ if __name__ == '__main__':
                         spoofed = spoof.is_spoof(cropped)
                         if spoofed[0][1] > 0.8:
                             print("Spoof detected",spoofed[0][1])
-                        rects.append((int(face.face.x1), int(face.face.y1), int(face.face.x2), int(face.face.y2), face.name))
+                        else:
+                            rects.append((int(face.face.x1), int(face.face.y1), int(face.face.x2), int(face.face.y2), face.name))
                         # frame = app.Draw(frame,face)
                         # print("\n",face.name,matricule[face.name] )
                         # print(face.name, face.distance)
