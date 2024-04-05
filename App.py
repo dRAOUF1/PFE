@@ -7,7 +7,30 @@ import os
 import cv2
 import requests
 import numpy as np
+def pWienerTF4e(image,H,K):
 
+    transfer_func = H
+    constant = K 
+    H_abs_sq= np.multiply(np.conjugate(transfer_func),transfer_func)
+    blurred_image = image
+    blurred_image_fft = np.fft.fft2(blurred_image)
+    blurred_image_fft_shift = np.fft.fftshift(blurred_image_fft)
+    fft_rows = blurred_image_fft_shift.shape[0]
+    fft_cols = blurred_image_fft_shift.shape[1]
+    first_func = np.zeros((fft_rows,fft_cols), dtype = complex)
+            
+    denom = np.multiply(np.add(H_abs_sq,constant),transfer_func)
+    for i in range(fft_rows):
+        for k in range(fft_cols):
+            if denom[i][k] != 0+0*1j:
+                first_func[i][k] = H_abs_sq[i][k]/denom[i][k]
+
+    unblurred_image_f= np.multiply(first_func,blurred_image_fft_shift)
+    unblurred_image_f_reshift = np.fft.ifftshift(unblurred_image_f)
+    unblurred_image = np.fft.ifft2(unblurred_image_f_reshift)
+    unblurred_image_abs = np.abs(unblurred_image)
+
+    return unblurred_image_abs
 class App:
     """
     Class representing an application for face recognition and detection.
@@ -29,12 +52,12 @@ class App:
         try:
             self.detector = Detector(modelPath=detection_model_path,
                                      inputSize=[320, 320],
-                                     confThreshold=0.65,
+                                     confThreshold=0.9,
                                      nmsThreshold=0.3,
                                     )
             self.recognizer = Recogniser(modelPath=recognition_model_path, disType=0)
             self.embeddings = self._getEmbeddingsFromBackend(db_path)
-        except Exception as e:
+        except IndexError as e:
             print(f"Error occurred during initialization: {str(e)}")
 
     
@@ -66,6 +89,10 @@ class App:
             embeddings = {im.split('/')[-1].split('\\')[-1].split('.')[0]: None for im in images}
             for image in images:
                 img = cv2.imread(image)
+                # kernel = np.array([[0, -1, 0],
+                #    [-1, 5,-1],
+                #    [0, -1, 0]])
+                # img = cv2.filter2D(src=img, ddepth=-1, kernel=kernel)
                 self.detector.setInputSize([img.shape[1], img.shape[0]])
                 faces = self.detector.infer(img)
                 if len(faces) > 0:
@@ -111,6 +138,11 @@ class App:
             faces = self.detector.infer(image)
             if len(faces) > 0:
                 for face in faces:
+                    # f = image[int(face.y1):int(face.y2),int(face.x1):int(face.x2)]
+                    # cv2.imshow("face",f)
+                    
+                    # cv2.waitKey(0)
+                    # cv2.destroyAllWindows()
                     minDist = 0
                     minKey = None
                     embedding = self.recognizer.infer(image, face.toArray()[:-1])
@@ -131,9 +163,9 @@ class App:
             print(f"Error occurred during face recognition: {str(e)}")
             return []
 
-    def facesFromVideo(self, video_path, output_path):
+    def recognizedFacesFromVideo(self, video_path, output_path):
         """
-        Extracts faces from the specified video and saves them to the output directory.
+        Extracts recognized faces from the specified video and saves them to the output directory.
 
         Args:
             video_path (str): The path to the input video file.
@@ -156,6 +188,32 @@ class App:
         except Exception as e:
             print(f"Error occurred during face extraction from video: {str(e)}")
 
+    def facesFromVideo(self, video_path, output_path):
+        """
+        Extracts faces from the specified video and saves them to the output directory.
+
+        Args:
+            video_path (str): The path to the input video file.
+            output_path (str): The path to the output directory.
+        """
+        try:
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+            cap = cv2.VideoCapture(video_path)
+            c=0
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                faces = self.extractFaces(frame)
+                for face in faces:
+                    cropped = frame[int(face.y1):int(face.y2), int(face.x1):int(face.x2)]
+                    cropped = cv2.resize(cropped, (128, 128))
+                    cv2.imwrite(f"{output_path}/{c}.jpg", cropped)
+                    c+=1
+            cap.release()
+        except Exception as e:
+            print(f"Error occurred during face extraction from video: {str(e)}")
     def Draw(self, frame, obj, keypoints=False):
         """
         Draws the specified object on the given frame.

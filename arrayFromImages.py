@@ -1,5 +1,6 @@
 import os
 import cv2
+import numpy as np
 import pymongo
 import sys
 import getopt
@@ -57,8 +58,13 @@ if __name__ == "__main__":
     for image in images:
         # try:
         img = cv2.imread(image)
+        kernel = np.array([[0, -1, 0],
+                   [-1, 5,-1],
+                   [0, -1, 0]])
+        img = cv2.filter2D(src=img, ddepth=-1, kernel=kernel)
         detector.setInputSize([img.shape[1], img.shape[0]])
         faces = detector.detect(img)
+        
         if len(faces) > 0:
             inputBlob = recognizer.alignCrop(img, faces[1][:-1])
             embedding = recognizer.feature(inputBlob)
@@ -69,7 +75,7 @@ if __name__ == "__main__":
                     print(f"Error: Matricule {matricule} not found in the etudiants collection.")
                     continue
                 # Insert the student's embedding into the MongoDB database
-                result = db.embeddings.insert_one(etudiant)
+                result = db.embeddings3.insert_one(etudiant)
             except pymongo.errors.DuplicateKeyError:
                 print("Error: Duplicate key.")
                 continue

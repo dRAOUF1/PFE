@@ -82,7 +82,7 @@ class Detector:
                 nose=(face[8], face[9]),
                 right_mouth=(face[10], face[11]), # (x, y)
                 left_mouth=(face[12], face[13]) # (x, y
-            ) for face in results[1] if face[2]>27 and face[3]>27]
+            ) for face in results[1] if face[0] >= 0 and face[1] >= 0 and face[2] > 0 and face[3] > 0]
             return faces
         
         return []
