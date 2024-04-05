@@ -2,10 +2,9 @@ from App import App
 import cv2 ,time, os
 import requests
 import sys,getopt
-from dotenv import load_dotenv
-import gc
 from picamera2 import Picamera2
-
+from dotenv import load_dotenv
+import random
 
 load_dotenv()
 
@@ -18,28 +17,21 @@ def usage():
 
 
 
-from centroidtracker2 import CentroidTracker
-from VideoStream import VideoStream
-import numpy as np
 
 
-
-rotations = {0:(None,(1920,1080)),
-             90:(cv2.ROTATE_90_CLOCKWISE,(1080,1920 )),
-             180:(cv2.ROTATE_180,(1920,1080)),
-             270:(cv2.ROTATE_90_COUNTERCLOCKWISE,(1080,1920 ))
+rotations = {0:(None,(640,360 )),
+             90:(cv2.ROTATE_90_CLOCKWISE,(360,640 )),
+             180:(cv2.ROTATE_180,(640,360 )),
+             270:(cv2.ROTATE_90_COUNTERCLOCKWISE,(360,640 ))
     }
 
-
 if __name__ == '__main__':
-    gc.enable()
     
     adresse_ip = os.getenv('URL_BACKEND')
     port = os.getenv('PORT')
     degre_rotation = int(os.getenv('ROTATION'))
     save_faces = False
 
-    
     # Analyser les arguments de la ligne de commande
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ir")
@@ -73,68 +65,82 @@ if __name__ == '__main__':
     
     
     app = App(f"http://{adresse_ip}/getEmbeddings/all/all")
-
+    print(app.embeddings)
     print("fin app build")
     presents = []
 
-    # cap = VideoStream(0)
-    # cap.start()
-    vcap = Picamera2()
-        # Set the resolution of the camera preview
-    vcap.preview_configuration.main.size = (1920,1080)
-    vcap.preview_configuration.main.format = "RGB888"
-    vcap.preview_configuration.controls.FrameRate=30
-    vcap.preview_configuration.align()
-    vcap.configure("preview")
-    vcap.start()
-    ct = CentroidTracker()
+    # Create an instance of the PiCamera2 object
+    cam = Picamera2()
+    # Set the resolution of the camera preview
+    cam.preview_configuration.main.size = (696,360)
+    cam.preview_configuration.main.format = "RGB888"
+    cam.preview_configuration.controls.FrameRate=60
+    cam.preview_configuration.align()
+    cam.configure("preview")
+    cam.start()
     
     prev_frame_time = 0
     fp = []
     c = 0
-    print("debut boucle")
-    while True:
-        rects = []
-        frame=vcap.capture_array()
-        if frame is None:
-            break
-        
-        if not degre_rotation[0] == None:
-            frame = cv2.rotate(frame, degre_rotation[0])
-        
-        c+=1
-        if c%2==0:
+    ran = random.randint(1,1000)
+    out = cv2.VideoWriter(f'video_enregistree{ran}.avi', cv2.VideoWriter_fourcc(*'XVID'),30,(350,140))
+    with open(f"log-{ran}.txt","w") as f:
+        print("debut boucle")
+        while True:
+    #         ret,frame=cap.read()
+    #         if not ret:
+    #             break
+            #print("capture")
+            rects = []
+            frame = cam.capture_array()
             
-            faces = app.find_match(frame)
-            for face in faces:
-                if save_faces:
-                    cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
-                    cropped = cv2.resize(cropped,(128,128))
-                    cv2.imwrite(f"faces/{face.name}-{time.time()}.jpg",cropped)
-                rects.append((int(face.face.x1), int(face.face.y1), int(face.face.x2), int(face.face.y2), face.name))
-                frame = app.Draw(frame,face)
-                # print("/n",face.name, face.distance )
-                # print(face.name)    
-            objects = ct.update(rects)
-                # r = requests.post(f"http://{adresse_ip}:{port}/postEtdsPresent",json={"matricule":face.name})
-                # print(r)
-                    #exit(0)
-        del rects
-        new_frame_time = time.time()
-        try: 
-            fps = 1/(new_frame_time-prev_frame_time) 
-        except (ZeroDivisionError):
-            pass
-        prev_frame_time = new_frame_time 
-        fp.append(fps)
-        fps = str(int(fps))
-        # cv2.imshow("lol",frame)
-        gc.collect()
-        # cv2.imshow("recon",recon)
-        k = cv2.waitKey(1)
-        if k == 27:         # wait for ESC key to exit
-            break
+            #frame = cv2.resize(frame,(350,140))
             
+            #resize frame to 0.5
+            #frame = cv2.resize(frame, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_AREA)
+            if not degre_rotation[0] == 0:
+                rotated_frame = cv2.rotate(frame, degre_rotation[0])
+                
+            
+            #time.sleep(1)
+            c+=1
+            # frame = cv2.resize(frame,(128,96))
+            if c%5==0:
+                faces = app.find_match(rotated_frame)
+
+                #print(len(faces),"hadi len of faces")
+                if len(faces)>0:
+                    for face in faces:
+                        if save_faces:
+                            cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
+                            cropped = cv2.resize(cropped,(128,128))
+                            cv2.imwrite(f"faces/{face.name}-{time.time()}.jpg",cropped)
+                        frame = app.Draw(frame,face)
+                        # print("\n",face.name,matricule[face.name] )
+                        print(face.name, face.distance)
+                        
+                        #f.write(f"{face.name}    {face.distance}\n")
+                        
+                        # r = requests.post(f"http://{adresse_ip}/postEtdsPresent",json={"matricule":face.name})
+                        # print(r)
+                            #exit(0)
+            cv2.imshow('frame',rotated_frame)
+            if cv2.waitKey(1)==27:
+                break
+                 
+            
+            new_frame_time = time.time()
+            try: 
+                fps = 1/(new_frame_time-prev_frame_time) 
+            except (ZeroDivisionError):
+                pass
+            prev_frame_time = new_frame_time 
+            fp.append(fps)
+            fps = str(int(fps))
+        #cv2.putText(frame, fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 3, (100, 255, 0), 3, cv2.LINE_AA) 
+        
+        
+
     #average of fp
     c = 0
     for f in fp:
