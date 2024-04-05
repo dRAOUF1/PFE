@@ -75,6 +75,7 @@ if __name__ == '__main__':
     presents = []
 
     cap = VideoStream(0)
+    cap.start()
     ct = CentroidTracker()
     
     prev_frame_time = 0
