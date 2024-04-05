@@ -80,7 +80,7 @@ if __name__ == '__main__':
     c = 0
     ran = random.randint(1,1000)
     ct = CentroidTracker()
-    spoof = Spoofing("/home/pi/Desktop/test-pfe/PFE/models/spoof.pkl")
+    spoof = Spoofing("/home/pi/Desktop/test-pfe/PFE/models/rd_spoof.pkl")
     cap.start()
 
     with open(f"log-{ran}.txt","w") as f:
