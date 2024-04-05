@@ -6,6 +6,7 @@ from picamera2 import Picamera2
 from dotenv import load_dotenv
 import random
 from centroidtracker2 import CentroidTracker
+from VideoStream import VideoStream
 
 load_dotenv()
 
@@ -71,20 +72,14 @@ if __name__ == '__main__':
     presents = []
 
     # Create an instance of the PiCamera2 object
-    cam = Picamera2()
-    # Set the resolution of the camera preview
-    cam.preview_configuration.main.size = (696,360)
-    cam.preview_configuration.main.format = "RGB888"
-    cam.preview_configuration.controls.FrameRate=60
-    cam.preview_configuration.align()
-    cam.configure("preview")
-    cam.start()
     
+    cap = VideoStream(0)
     prev_frame_time = 0
     fp = []
     c = 0
     ran = random.randint(1,1000)
     ct = CentroidTracker()
+    cap.start()
 
     with open(f"log-{ran}.txt","w") as f:
         print("debut boucle")
@@ -94,7 +89,7 @@ if __name__ == '__main__':
     #             break
             #print("capture")
             rects = []
-            frame = cam.capture_array()
+            frame = cap.read()
             
             #frame = cv2.resize(frame,(350,140))
             
