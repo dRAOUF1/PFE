@@ -107,7 +107,7 @@ if __name__ == '__main__':
             #time.sleep(1)
             c+=1
             # frame = cv2.resize(frame,(128,96))
-            if c%2==0:
+            if c%1==0:
                 rects = []
                 faces = app.find_match(rotated_frame)
 
@@ -121,7 +121,7 @@ if __name__ == '__main__':
                         rects.append((int(face.face.x1), int(face.face.y1), int(face.face.x2), int(face.face.y2), face.name))
                         # frame = app.Draw(frame,face)
                         # print("\n",face.name,matricule[face.name] )
-                        # print(face.name, face.distance)
+                        print(face.name, face.distance)
                         
                         #f.write(f"{face.name}    {face.distance}\n")
                         
