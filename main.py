@@ -75,9 +75,17 @@ if __name__ == '__main__':
     print("fin app build")
     presents = []
 
-    cap = VideoStream(0)
-    cap.start()
-    # ct = CentroidTracker()
+    # cap = VideoStream(0)
+    # cap.start()
+    vcap = Picamera2()
+        # Set the resolution of the camera preview
+    vcap.preview_configuration.main.size = (1920,1080)
+    vcap.preview_configuration.main.format = "RGB888"
+    vcap.preview_configuration.controls.FrameRate=30
+    vcap.preview_configuration.align()
+    vcap.configure("preview")
+    vcap.start()
+    ct = CentroidTracker()
     
     prev_frame_time = 0
     fp = []
@@ -85,9 +93,9 @@ if __name__ == '__main__':
     print("debut boucle")
     while True:
         rects = []
-        frame=cap.read()
+        frame=vcap.capture_array()
         if frame is None:
-            continue
+            break
         
         if not degre_rotation[0] == None:
             frame = cv2.rotate(frame, degre_rotation[0])
@@ -105,7 +113,7 @@ if __name__ == '__main__':
                 frame = app.Draw(frame,face)
                 # print("/n",face.name, face.distance )
                 # print(face.name)    
-            # objects = ct.update(rects)
+            objects = ct.update(rects)
                 # r = requests.post(f"http://{adresse_ip}:{port}/postEtdsPresent",json={"matricule":face.name})
                 # print(r)
                     #exit(0)
