@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     cap = VideoStream(0)
     cap.start()
-    ct = CentroidTracker()
+    # ct = CentroidTracker()
     
     prev_frame_time = 0
     fp = []
@@ -105,11 +105,11 @@ if __name__ == '__main__':
                 frame = app.Draw(frame,face)
                 # print("/n",face.name, face.distance )
                 # print(face.name)    
-            objects = ct.update(rects)
+            # objects = ct.update(rects)
                 # r = requests.post(f"http://{adresse_ip}:{port}/postEtdsPresent",json={"matricule":face.name})
                 # print(r)
                     #exit(0)
-        
+        del rects
         new_frame_time = time.time()
         try: 
             fps = 1/(new_frame_time-prev_frame_time) 
