@@ -73,7 +73,7 @@ if __name__ == '__main__':
     # Create an instance of the PiCamera2 object
     cam = Picamera2()
     # Set the resolution of the camera preview
-    cam.preview_configuration.main.size = (1920,1080)
+    cam.preview_configuration.main.size = (1080,720)
     cam.preview_configuration.main.format = "RGB888"
     cam.preview_configuration.controls.FrameRate=30
     cam.preview_configuration.align()
