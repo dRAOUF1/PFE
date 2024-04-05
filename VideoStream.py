@@ -30,7 +30,7 @@ class VideoStream:
             self.frame = self.vcap.capture_array()
             self.frames.append(self.frame)
             # Supprimer les frames non utilisées pour éviter l'accumulation
-            if len(self.frames) > 30:
+            if len(self.frames) > 60:
                 self.frames.pop(0)
 
         self.vcap.release()
