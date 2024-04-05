@@ -4,6 +4,8 @@ import requests
 import sys,getopt
 from dotenv import load_dotenv
 import gc
+from picamera2 import Picamera2
+
 
 load_dotenv()
 
