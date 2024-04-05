@@ -2,7 +2,6 @@ from App import App
 import cv2 ,time, os
 import requests
 import sys,getopt
-from picamera2 import Picamera2
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -75,16 +74,8 @@ if __name__ == '__main__':
     print("fin app build")
     presents = []
 
-
-    # Create an instance of the PiCamera2 object
-    cam = Picamera2()
-    # Set the resolution of the camera preview
-    cam.preview_configuration.main.size = degre_rotation[1]
-    cam.preview_configuration.main.format = "RGB888"
-    cam.preview_configuration.controls.FrameRate=60
-    cam.preview_configuration.align()
-    cam.configure("preview")
-    cam.start()
+    cap = VideoStream(0)
+    ct = CentroidTracker()
     
     prev_frame_time = 0
     fp = []
