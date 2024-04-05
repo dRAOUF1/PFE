@@ -5,6 +5,7 @@ import sys,getopt
 from picamera2 import Picamera2
 from dotenv import load_dotenv
 import random
+from centroidtracker2 import CentroidTracker
 
 load_dotenv()
 
@@ -83,7 +84,8 @@ if __name__ == '__main__':
     fp = []
     c = 0
     ran = random.randint(1,1000)
-    out = cv2.VideoWriter(f'video_enregistree{ran}.avi', cv2.VideoWriter_fourcc(*'XVID'),30,(350,140))
+    ct = CentroidTracker()
+
     with open(f"log-{ran}.txt","w") as f:
         print("debut boucle")
         while True:
@@ -105,7 +107,8 @@ if __name__ == '__main__':
             #time.sleep(1)
             c+=1
             # frame = cv2.resize(frame,(128,96))
-            if c%5==0:
+            if c%2==0:
+                rects = []
                 faces = app.find_match(rotated_frame)
 
                 #print(len(faces),"hadi len of faces")
@@ -115,7 +118,8 @@ if __name__ == '__main__':
                             cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
                             cropped = cv2.resize(cropped,(128,128))
                             cv2.imwrite(f"faces/{face.name}-{time.time()}.jpg",cropped)
-                        frame = app.Draw(frame,face)
+                        rects.append((int(face.face.x1), int(face.face.y1), int(face.face.x2), int(face.face.y2), face.name))
+                        # frame = app.Draw(frame,face)
                         # print("\n",face.name,matricule[face.name] )
                         print(face.name, face.distance)
                         
@@ -124,6 +128,7 @@ if __name__ == '__main__':
                         # r = requests.post(f"http://{adresse_ip}/postEtdsPresent",json={"matricule":face.name})
                         # print(r)
                             #exit(0)
+                    objects = ct.update(rects)
             cv2.imshow('frame',rotated_frame)
             if cv2.waitKey(1)==27:
                 break
