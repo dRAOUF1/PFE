@@ -73,9 +73,9 @@ if __name__ == '__main__':
     # Create an instance of the PiCamera2 object
     cam = Picamera2()
     # Set the resolution of the camera preview
-    cam.preview_configuration.main.size = (1920,1080)
+    cam.preview_configuration.main.size = (696,360)
     cam.preview_configuration.main.format = "RGB888"
-    cam.preview_configuration.controls.FrameRate=30
+    cam.preview_configuration.controls.FrameRate=60
     cam.preview_configuration.align()
     cam.configure("preview")
     cam.start()
@@ -121,7 +121,7 @@ if __name__ == '__main__':
                         rects.append((int(face.face.x1), int(face.face.y1), int(face.face.x2), int(face.face.y2), face.name))
                         # frame = app.Draw(frame,face)
                         # print("\n",face.name,matricule[face.name] )
-                        print(face.name, face.distance)
+                        # print(face.name, face.distance)
                         
                         #f.write(f"{face.name}    {face.distance}\n")
                         
