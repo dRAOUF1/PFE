@@ -107,7 +107,7 @@ if __name__ == '__main__':
             #time.sleep(1)
             c+=1
             # frame = cv2.resize(frame,(128,96))
-            if c%1==0:
+            if c%2==0:
                 rects = []
                 faces = app.find_match(rotated_frame)
 
@@ -129,7 +129,7 @@ if __name__ == '__main__':
                         # print(r)
                             #exit(0)
                 objects = ct.update(rects)
-                print(objects)
+                # print(objects)
             cv2.imshow('frame',rotated_frame)
             if cv2.waitKey(1)==27:
                 break
