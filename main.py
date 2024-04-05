@@ -90,6 +90,8 @@ if __name__ == '__main__':
             #print("capture")
             rects = []
             frame = cap.read()
+            if frame is None:
+                break
             
             #frame = cv2.resize(frame,(350,140))
             
