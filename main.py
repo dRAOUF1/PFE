@@ -3,6 +3,7 @@ import cv2 ,time, os
 import requests
 import sys,getopt
 from dotenv import load_dotenv
+import gc
 
 load_dotenv()
 
@@ -29,7 +30,7 @@ rotations = {0:(None,(1920,1080)),
 
 
 if __name__ == '__main__':
-
+    gc.enable()
     
     adresse_ip = os.getenv('URL_BACKEND')
     port = os.getenv('PORT')
@@ -117,7 +118,8 @@ if __name__ == '__main__':
         prev_frame_time = new_frame_time 
         fp.append(fps)
         fps = str(int(fps))
-        cv2.imshow("lol",frame)
+        # cv2.imshow("lol",frame)
+        gc.collect()
         # cv2.imshow("recon",recon)
         k = cv2.waitKey(1)
         if k == 27:         # wait for ESC key to exit
