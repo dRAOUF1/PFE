@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import random
 from centroidtracker2 import CentroidTracker
 from VideoStream import VideoStream
+from Spoofing import Spoofing
 
 load_dotenv()
 
@@ -79,6 +80,7 @@ if __name__ == '__main__':
     c = 0
     ran = random.randint(1,1000)
     ct = CentroidTracker()
+    spoof = Spoofing("/home/pi/Desktop/test-pfe/PFE/models/spoof.pkl")
     cap.start()
 
     with open(f"log-{ran}.txt","w") as f:
@@ -111,10 +113,13 @@ if __name__ == '__main__':
                 #print(len(faces),"hadi len of faces")
                 if len(faces)>0:
                     for face in faces:
+                        cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
                         if save_faces:
-                            cropped = frame[int(face.face.y1):int(face.face.y2), int(face.face.x1):int(face.face.x2)]
                             cropped = cv2.resize(cropped,(128,128))
                             cv2.imwrite(f"faces/{face.name}-{time.time()}.jpg",cropped)
+                        spoofed = spoof.is_spoof(cropped)
+                        if spoofed[0][1] > 0.5:
+                            print("Spoof detected",spoofed[0][1])
                         rects.append((int(face.face.x1), int(face.face.y1), int(face.face.x2), int(face.face.y2), face.name))
                         # frame = app.Draw(frame,face)
                         # print("\n",face.name,matricule[face.name] )
