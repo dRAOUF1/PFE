@@ -29,7 +29,7 @@ class VideoStream:
         self.frame = self.vcap.capture_array()
         
         # self.stopped is initialized to False 
-        # self.stopped = Event()  
+        self.stopped = Event()  
         self.frames.append(self.frame)
         # thread instantiation  
         self.t = Thread(target=self.update, args=())
