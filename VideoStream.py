@@ -45,7 +45,7 @@ class VideoStream:
             if self.stopped.is_set() :
                 break
             self.frame = self.vcap.capture_array()
-            print("frame captured",self.frame.shape)
+            # print("frame captured",self.frame.shape)
             self.frames.append(self.frame)
         self.vcap.release()
     # method to return latest read frame 
