@@ -128,8 +128,8 @@ if __name__ == '__main__':
                         # r = requests.post(f"http://{adresse_ip}/postEtdsPresent",json={"matricule":face.name})
                         # print(r)
                             #exit(0)
-                    objects = ct.update(rects)
-                    print(objects)
+                objects = ct.update(rects)
+                print(objects)
             cv2.imshow('frame',rotated_frame)
             if cv2.waitKey(1)==27:
                 break
