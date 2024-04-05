@@ -129,6 +129,7 @@ if __name__ == '__main__':
                         # print(r)
                             #exit(0)
                     objects = ct.update(rects)
+                    print(objects)
             cv2.imshow('frame',rotated_frame)
             if cv2.waitKey(1)==27:
                 break
