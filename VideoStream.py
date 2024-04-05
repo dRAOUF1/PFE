@@ -50,7 +50,7 @@ class VideoStream:
         self.vcap.release()
     # method to return latest read frame 
     def read(self):
-        if len(self.frames) == 0 and self.stopped.is_set():
+        if len(self.frames) == 0 or self.stopped.is_set():
             return None
         
         return self.frames.pop(0)

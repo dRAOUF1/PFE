@@ -85,7 +85,7 @@ if __name__ == '__main__':
         rects = []
         frame=cap.read()
         if frame is None:
-            break
+            continue
         
         if not degre_rotation[0] == None:
             frame = cv2.rotate(frame, degre_rotation[0])
