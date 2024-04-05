@@ -13,7 +13,7 @@ class VideoStream:
         # Set the resolution of the camera preview
         self.vcap.preview_configuration.main.size = (1920,1080)
         self.vcap.preview_configuration.main.format = "RGB888"
-        self.vcap.preview_configuration.controls.FrameRate=60
+        self.vcap.preview_configuration.controls.FrameRate=30
         self.vcap.preview_configuration.align()
         self.vcap.configure("preview")
         self.vcap.start()
@@ -45,7 +45,7 @@ class VideoStream:
             if self.stopped.is_set() :
                 break
             self.frame = self.vcap.capture_array()
-            
+            print("frame captured",self.frame.shape)
             self.frames.append(self.frame)
         self.vcap.release()
     # method to return latest read frame 
