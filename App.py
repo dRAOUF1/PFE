@@ -292,7 +292,7 @@ class App:
             print(f"Error occurred during drawing face: {str(e)}")
             return frame
 
-    def get_embedding(self,frame):
+    def get_embedding(self,frame,face):
         """
         Extracts the embeddings from the given frame.
 
@@ -302,13 +302,11 @@ class App:
         Returns:
             numpy.ndarray: The embeddings extracted from the frame.
         """
+       
         try:
-            faces = self.extractFaces(frame)
-            if len(faces) > 0:
-                for face in faces:
-                    embedding = self.recognizer.infer(frame, face.toArray()[:-1])
-                    return embedding
-            return None
+            embedding = self.recognizer.infer(frame, face.toArray()[:-1])
+            return embedding
+            
         except Exception as e:
             print(f"Error occurred during getting embeddings: {str(e)}")
             return None
