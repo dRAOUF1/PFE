@@ -5,7 +5,7 @@ import joblib
 
 
 class Spoofing:
-    def __init__(self,model_path="C:/Users/yas/Desktop/PFE/models/spoof.pkl"):
+    def __init__(self,model_path="C:/Users/yas/Desktop/PFE/models/spoof5000.pkl"):
         self.model = joblib.load(model_path)
 
     def preprocess_image(self, image):
@@ -32,7 +32,7 @@ class Spoofing:
         feature_vector = self.preprocess_image(image)
 
         # Faire une prédiction avec le modèle
-        prediction = self.model.predict_proba(feature_vector)
+        prediction = self.model.predict(feature_vector)
 
         # Renvoyer la prédiction
         return prediction
