@@ -24,7 +24,7 @@ class Recogniser:
             self._disType = disType # 0: cosine similarity, 1: Norm-L2 distance
             assert self._disType in [0, 1], "0: Cosine similarity, 1: norm-L2 distance, others: invalid"
 
-            self._threshold_cosine = 0.42
+            self._threshold_cosine = 0.45
             self._threshold_norml2 = 1.128
         except Exception as e:
             print(f"Error occurred during initialization: {str(e)}")
@@ -120,6 +120,7 @@ class Recogniser:
             
             if self._disType == 0: # COSINE
                 cosine_score = self._model.match(feature1, feature2, self._disType)
+                # print(cosine_score)
                 return cosine_score if cosine_score >= self._threshold_cosine else 0
             else: # NORM_L2
                 norml2_distance = self._model.match(feature1, feature2, self._disType)

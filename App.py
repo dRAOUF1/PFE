@@ -52,7 +52,7 @@ class App:
         try:
             self.detector = Detector(modelPath=detection_model_path,
                                      inputSize=[320, 320],
-                                     confThreshold=0.9,
+                                     confThreshold=0.85,
                                      nmsThreshold=0.3,
                                     )
             self.recognizer = Recogniser(modelPath=recognition_model_path, disType=0)
@@ -134,6 +134,7 @@ class App:
         """
         try:
             recognizedFaces = []
+            
             self.detector.setInputSize([image.shape[1], image.shape[0]])
             faces = self.detector.infer(image)
             if len(faces) > 0:

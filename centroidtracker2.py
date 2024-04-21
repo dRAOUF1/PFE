@@ -4,7 +4,7 @@ from collections import OrderedDict
 import numpy as np
 
 class CentroidTracker:
-	def __init__(self, maxDisappeared=6, maxDistance=80):
+	def __init__(self, maxDisappeared=4, maxDistance=90):
 		# initialize the next unique object ID along with two ordered
 		# dictionaries used to keep track of mapping a given object
 		# ID to its centroid and number of consecutive frames it has
@@ -39,7 +39,7 @@ class CentroidTracker:
 		#get the max matricule from etudiants
 		etudiants = self.objects[objectID]["etudiants"]
 		max_matricule = max(etudiants,key=etudiants.get)
-		if etudiants[max_matricule] > 0:
+		if etudiants[max_matricule] > 1:
 			print("hada max",max_matricule, "hada id",objectID, "count",etudiants[max_matricule])
 		del self.objects[objectID]
 		del self.disappeared[objectID]
@@ -99,8 +99,8 @@ class CentroidTracker:
 			# goal will be to match an input centroid to an existing
 			# object centroid
 			D = dist.cdist(np.array(objectCentroids[:,:2].astype('int32')), inputCentroids1[:,:2].astype('int32'))
-			# if D.size>1:
-				# print("lol")
+			if D.size>1:
+				print("lol")
 			#D = dist.cdist(np.array(objectCentroids[:1]), inputCentroids)
 			# in order to perform this matching we must (1) find the
 			# smallest value in each row and then (2) sort the row

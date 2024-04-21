@@ -2,14 +2,14 @@ from App import App
 import cv2 ,time, os
 import requests
 import sys,getopt
-from picamera2 import Picamera2
-from dotenv import load_dotenv
+# from picamera2 import Picamera2
+# from dotenv import load_dotenv
 import random
 from centroidtracker2 import CentroidTracker
-from VideoStream import VideoStream
+# from VideoStream import VideoStream
 from Spoofing import Spoofing
 
-load_dotenv()
+# load_dotenv()
 
 def usage():
   print("Utilisation : {} -i <adresse_ip> -p <port> [-r <degre_rotation>]".format(sys.argv[0]))
@@ -30,9 +30,8 @@ rotations = {0:(None,(640,360 )),
 
 if __name__ == '__main__':
     
-    adresse_ip = os.getenv('URL_BACKEND')
-    port = os.getenv('PORT')
-    degre_rotation = int(os.getenv('ROTATION'))
+    adresse_ip = "localhost:3001"
+    degre_rotation = 0
     save_faces = False
 
     # Analyser les arguments de la ligne de commande
@@ -74,14 +73,14 @@ if __name__ == '__main__':
 
     # Create an instance of the PiCamera2 object
     
-    cap = VideoStream(0)
+    cap = cv2.VideoCapture("C:/Users/yas/Desktop/test.avi")
     prev_frame_time = 0
     fp = []
     c = 0
     ran = random.randint(1,1000)
     ct = CentroidTracker()
-    spoof = Spoofing("/home/pi/Desktop/test-pfe/PFE/models/rd_spoof.pkl")
-    cap.start()
+    spoof = Spoofing("C:/Users/yas/Desktop/PFE/models/spoof_Random Forest10000.pkl")
+    # cap.start()
 
     with open(f"log-{ran}.txt","w") as f:
         print("debut boucle")
@@ -91,7 +90,7 @@ if __name__ == '__main__':
     #             break
             #print("capture")
             rects = []
-            frame = cap.read()
+            ret,frame = cap.read()
             if frame is None:
                 break
             
@@ -100,13 +99,15 @@ if __name__ == '__main__':
             #resize frame to 0.5
             #frame = cv2.resize(frame, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_AREA)
             if not degre_rotation[0] == 0:
-                rotated_frame = cv2.rotate(frame, degre_rotation[0])
+                rotated_frame = cv2.rotate(frame,cv2.ROTATE_180)
                 
             
             #time.sleep(1)
             c+=1
             # frame = cv2.resize(frame,(128,96))
-            if c%2==0:
+            #resize 1.25
+            rotated_frame = cv2.resize(rotated_frame, None, fx=1.25, fy=1.25, interpolation=cv2.INTER_AREA)
+            if c%1==0:
                 rects = []
                 faces = app.find_match(rotated_frame)
 
@@ -118,11 +119,10 @@ if __name__ == '__main__':
                             cropped = cv2.resize(cropped,(128,128))
                             cv2.imwrite(f"faces/{face.name}-{time.time()}.jpg",cropped)
                         spoofed = spoof.is_spoof(cropped)
-                        if spoofed[0][1] > 0.6:
+                        if 0.67 > spoofed[0][1]:
                             print("Spoof detected",spoofed[0][1])
-                        else:
-                            rects.append((int(face.face.x1), int(face.face.y1), int(face.face.x2), int(face.face.y2), face.name))
-                        # frame = app.Draw(frame,face)
+                        rects.append((int(face.face.x1), int(face.face.y1), int(face.face.x2), int(face.face.y2), face.name))
+                        rotated_frame = app.Draw(rotated_frame,face)
                         # print("\n",face.name,matricule[face.name] )
                         # print(face.name, face.distance)
                         
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     #average of fp
     c = 0
     for f in fp:
-        c+=f
+        c+=int(f)
     try:
         print("average",c/len(fp))
     except:
